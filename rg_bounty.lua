@@ -2,20 +2,20 @@ local bounties = {}
 local tableOfKills = {}
 
 function checkBounties( victim, weapon, killer )
-	if bounties[""..victim:Nick()..""] ~= nil then
-		bounty = bounties[""..victim:Nick()..""]
+	if bounties[""..victim:SteamID()..""] ~= nil then
+		bounty = bounties[""..victim:SteamID()..""]
 		by = nil
 		if victim == killer then return end
-		if bounty.by ~= killer:Nick() then
+		if bounty.by ~= killer:SteamID() then
 			players = player.GetAll()
 			for k,v in pairs ( players ) do
-			     if bounty.by == v:Nick() then
+			     if bounty.by == v:SteamID() then
 			     	by = v
 			     	break
 			     end
 			end
 			if by == nil then
-				bounties[""..victim:Nick()..""] = nil
+				bounties[""..victim:SteamID()..""] = nil
 				return
 			end
 			by:AddMoney( -bounty.amount )
@@ -26,7 +26,7 @@ function checkBounties( victim, weapon, killer )
 				local victimcol, killercol = team.GetColor( victim:Team() ), team.GetColor( killer:Team() )
 				SendText(v, tagcol, tag, killercol, killer:Nick(), colpass, " won the bounty set on ", victimcol, victim:Nick(), colpass, " for " .. UTIL_FormatMoney( bounty.amount ) .. "!" )
 			end
-			bounties[""..victim:Nick()..""] = nil
+			bounties[""..victim:SteamID()..""] = nil
 		end
 	end
 end
@@ -56,7 +56,7 @@ function addBounty( ply, text, public )
 			return ""
 		end
 		if money > ply:GetMoney() then
-			SendText( ply, tagcol, tag, colfail, "You don't have that much money! You need $" .. math.ceil((money-ply:GetMoney())) .. " more.")
+			SendText( ply, tagcol, tag, colfail, "You don't have that much money! You need " .. UTIL_FormatMoney(money-ply:GetMoney()) .. " more.")
 			return ""
 		end
 		if money <= 0 then
@@ -67,9 +67,8 @@ function addBounty( ply, text, public )
 			SendText( ply, tagcol, tag, colfail, "Only a maximum of two decimal places is allowed.")
 			return ""
 		end
-		bounties[""..bountied:Nick()..""] = { by=ply:Nick(), amount=money }
+		bounties[""..bountied:SteamID()..""] = { by=ply:SteamID(), amount=money }
 		for k,v in pairs ( players ) do
-			bounties[""..bountied:Nick()..""] = { by=ply:Nick(), amount=money }
 			local colbountied, colby = team.GetColor( bountied:Team() ), team.GetColor( ply:Team() )
 			SendText( v, tagcol, tag, colby, ply:Nick(), colpass, " made a bounty on ", colbountied, bountied:Nick(), colpass, " for " .. UTIL_FormatMoney( money ) .. "!" )
 		end
